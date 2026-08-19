@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>For Zhuzhu 💕 A Day to Remember</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Shadows+Into+Light&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #E8F0F8;
+    --primary: #4A90A4;
+    --secondary: #7A9EB8;
+    --accent: #C0C0C0;
+    --ink: #2C3E50;
+    --cream: #F5F8FC;
+    --silver: #E8E8E8;
+    --gold: #C9A96E;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+    width: 100%; height: 100%;
+    overflow: hidden; position: fixed;
+    touch-action: none;
+    font-family: 'Courier Prime', monospace;
+    background: var(--bg); color: var(--ink);
+}
+.scene-container { width: 100%; height: 100%; position: relative; overflow: hidden; }
+.scene {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    pointer-events: none; padding: 28px 22px;
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    visibility: hidden;
+}
+.scene.active { opacity: 1; transform: translateY(0); pointer-events: all; visibility: visible; }
+.scene-content { max-width: 400px; width: 100%; text-align: center; position: relative; }
+
+/* === RETRO FILM GRAIN (StyleKit: 纸张纹理+做旧) === */
+body::after {
+    content: ''; position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%; pointer-events: none; z-index: 9999;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* === CORNER ORNAMENTS (StyleKit: 角花装饰) === */
+.corner-ornament { position: absolute; width: 18px; height: 18px; opacity: 0.2; pointer-events: none; z-index: 2; }
+.corner-ornament.tl { top: -6px; left: -6px; border-top: 1px solid var(--primary); border-left: 1px solid var(--primary); }
+.corner-ornament.tr { top: -6px; right: -6px; border-top: 1px solid var(--primary); border-right: 1px solid var(--primary); }
+.corner-ornament.bl { bottom: -6px; left: -6px; border-bottom: 1px solid var(--primary); border-left: 1px solid var(--primary); }
+.corner-ornament.br { bottom: -6px; right: -6px; border-bottom: 1px solid var(--primary); border-right: 1px solid var(--primary); }
+
+/* === DIVIDER (StyleKit: 装饰性分隔线) === */
+.divider { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 14px 0; opacity: 0.3; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--accent); }
+.divider-diamond { width: 5px; height: 5px; background: var(--primary); transform: rotate(45deg); flex-shrink: 0; }
+
+/* === COVER === */
+.cover-cherub { font-size: 1.4rem; margin-bottom: 6px; opacity: 0.4; }
+.cover-title {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(2.6rem, 8vw, 3.5rem);
+    color: var(--primary); margin-bottom: 4px; line-height: 1.1;
+}
+.cover-subtitle { font-family: 'Courier Prime', monospace; font-size: clamp(0.65rem, 2.5vw, 0.85rem); color: var(--secondary); letter-spacing: 3px; margin-bottom: 14px; }
+.cover-date { font-size: 0.65rem; color: var(--accent); letter-spacing: 3px; margin-bottom: 20px; }
+.cover-btn {
+    display: inline-block; padding: 12px 36px;
+    background: transparent; border: 1.5px solid var(--primary);
+    color: var(--primary); font-family: 'Courier Prime', monospace;
+    font-size: 0.85rem; letter-spacing: 2px; cursor: pointer;
+    transition: all 0.7s ease; position: relative;
+}
+.cover-btn:hover { background: var(--primary); color: var(--cream); }
+.cover-btn .btn-icon { margin-right: 6px; }
+
+/* === TEXT SCENES (StyleKit: 老式排版+衬线字体) === */
+.text-title {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(1.7rem, 5.5vw, 2.3rem);
+    color: var(--primary); margin-bottom: 14px;
+}
+.text-title::after { content: ''; display: block; width: 36px; height: 1px; background: var(--accent); margin: 8px auto 0; opacity: 0.35; }
+.text-body {
+    font-size: clamp(0.8rem, 2.6vw, 0.92rem); line-height: 2;
+    color: var(--ink); text-align: left;
+    padding: 26px 22px;
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(74,144,164,0.1);
+    position: relative;
+    box-shadow: 2px 3px 10px rgba(74,144,164,0.05);
+}
+.text-signature { font-family: 'Shadows Into Light', cursive; font-size: 1.2rem; color: var(--secondary); margin-top: 14px; text-align: right; }
+.tape { position: absolute; width: 44px; height: 14px; background: rgba(201,169,110,0.18); z-index: 5; }
+.tape.tl { top: -8px; left: 8px; transform: rotate(-7deg); }
+.tape.tr { top: -8px; right: 8px; transform: rotate(5deg); }
+
+/* === PHOTO TIMELINE (StyleKit: 图片做旧滤镜) === */
+.photos-title { font-family: 'Caveat', cursive; font-size: clamp(1.5rem, 5vw, 1.9rem); color: var(--primary); margin-bottom: 16px; }
+.timeline { position: relative; padding: 6px 0; }
+.timeline::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, transparent, var(--accent) 10%, var(--accent) 90%, transparent); opacity: 0.35; }
+.timeline-item { display: flex; align-items: center; margin-bottom: 14px; position: relative; }
+.timeline-item:nth-child(odd) { flex-direction: row; }
+.timeline-item:nth-child(even) { flex-direction: row-reverse; }
+.timeline-dot { width: 5px; height: 5px; background: var(--primary); border-radius: 50%; position: absolute; left: 50%; transform: translateX(-50%); z-index: 2; box-shadow: 0 0 0 3px var(--bg); }
+.timeline-photo { width: 46%; padding: 4px 4px 20px 4px; background: white; box-shadow: 2px 3px 8px rgba(0,0,0,0.08), 0 0 0 1px rgba(74,144,164,0.04); position: relative; }
+.timeline-item:nth-child(odd) .timeline-photo { transform: rotate(-1.5deg); margin-right: auto; }
+.timeline-item:nth-child(even) .timeline-photo { transform: rotate(1deg); margin-left: auto; }
+.timeline-photo img { width: 100%; height: 92px; object-fit: cover; display: block; filter: sepia(5%) saturate(90%) brightness(1.02); }
+.timeline-photo .photo-label { position: absolute; bottom: 3px; left: 0; right: 0; text-align: center; font-size: 0.52rem; color: var(--secondary); font-family: 'Shadows Into Light', cursive; letter-spacing: 1px; }
+.timeline-item:nth-child(3) .timeline-photo::before, .timeline-item:nth-child(7) .timeline-photo::before { content: ''; position: absolute; top: -7px; left: 50%; transform: translateX(-50%) rotate(-3deg); width: 32px; height: 10px; background: rgba(201,169,110,0.22); z-index: 3; }
+
+/* === HEART DRAW (DeepSeek: 轮廓描摹法) === */
+.heart-title { font-family: 'Caveat', cursive; font-size: clamp(1.5rem, 5vw, 1.9rem); color: var(--primary); margin-bottom: 6px; }
+.heart-instruction { font-size: 0.72rem; color: var(--secondary); margin-bottom: 10px; line-height: 1.5; }
+.canvas-area { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.deco-side { font-size: 1.1rem; color: var(--primary); opacity: 0.7; user-select: none; pointer-events: none; letter-spacing: 1px; }
+.canvas-wrapper { position: relative; width: 280px; height: 220px; border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 1px rgba(74,144,164,0.12), 0 6px 20px rgba(74,144,164,0.1); }
+#heartCanvas { display: block; width: 280px; height: 220px; touch-action: none; cursor: crosshair; border-radius: 8px; }
+.completion-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(232,240,248,0.88); backdrop-filter: blur(4px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; opacity: 0; pointer-events: none; transition: opacity 0.6s ease; border-radius: 8px; z-index: 10; }
+.completion-overlay.visible { opacity: 1; pointer-events: auto; }
+.completion-text { font-family: 'Caveat', cursive; font-size: 1.1rem; font-weight: 600; text-align: center; color: var(--primary); max-width: 240px; line-height: 1.4; }
+.heart-controls { display: flex; justify-content: center; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+.heart-progress { font-size: 0.72rem; color: var(--secondary); letter-spacing: 1px; min-width: 70px; }
+.completion-overlay .heart-btn { padding: 8px 28px; font-family: 'Courier Prime', monospace; font-size: 0.85rem; font-weight: 600; letter-spacing: 1.5px; color: #fff; background: linear-gradient(135deg, var(--primary) 0%, #2E6A7A 100%); border: none; border-radius: 20px; cursor: pointer; box-shadow: 0 4px 16px rgba(74,144,164,0.35); transition: all 0.3s ease; display: inline-block; }
+.completion-overlay .heart-btn:hover { box-shadow: 0 6px 24px rgba(74,144,164,0.5); transform: translateY(-1px); }
+.redraw-btn { padding: 7px 18px; background: transparent; border: 1.5px solid var(--accent); color: var(--secondary); font-family: 'Courier Prime', monospace; font-size: 0.78rem; letter-spacing: 1px; cursor: pointer; transition: all 0.3s ease; }
+
+/* === ACTION === */
+.action-title { font-family: 'Caveat', cursive; font-size: clamp(1.8rem, 6vw, 2.6rem); color: var(--primary); margin-bottom: 14px; }
+.action-text { font-size: clamp(0.8rem, 2.6vw, 0.92rem); line-height: 1.9; color: var(--ink); margin-bottom: 18px; padding: 18px; background: rgba(255,255,255,0.4); border: 1px solid rgba(74,144,164,0.06); position: relative; }
+.action-text::before { content: '❝'; position: absolute; top: -7px; left: 7px; font-size: 1.3rem; color: var(--accent); opacity: 0.35; }
+.action-date { font-size: 0.68rem; color: var(--accent); letter-spacing: 3px; }
+
+/* === NAV DOTS === */
+.nav-dots { position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 100; padding: 4px 9px; background: rgba(255,255,255,0.5); border-radius: 8px; backdrop-filter: blur(4px); }
+.nav-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); transition: all 0.3s ease; cursor: pointer; }
+.nav-dot.active { background: var(--primary); width: 14px; border-radius: 2px; }
+
+/* === SCROLL HINT === */
+.scroll-hint { position: absolute; bottom: 46px; left: 50%; transform: translateX(-50%); font-size: 0.58rem; color: var(--accent); letter-spacing: 2px; animation: scrollPulse 2s ease-in-out infinite; white-space: nowrap; }
+@keyframes scrollPulse { 0%,100% { opacity: 0.35; transform: translateX(-50%) translateY(0); } 50% { opacity: 0.7; transform: translateX(-50%) translateY(4px); } }
+
+/* === FLOATING HEARTS === */
+.floating-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9997; overflow: hidden; }
+.float-heart { position: absolute; font-size: 0.7rem; opacity: 0; animation: floatUp linear infinite; }
+@keyframes floatUp { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 0.1; } 90% { opacity: 0.1; } 100% { transform: translateY(-20px) rotate(360deg); opacity: 0; } }
+
+/* === RESPONSIVE === */
+@media (max-width: 380px) { .scene { padding: 20px 14px; } .timeline-photo img { height: 74px; } .text-body { padding: 18px 14px; } }
+@media (min-height: 700px) { .timeline-photo img { height: 108px; } }
+</style>
+</head>
+<body>
+
+<div class="floating-hearts" id="floatingHearts"></div>
+
+<div class="scene-container" id="sceneContainer">
+
+    <!-- COVER -->
+    <div class="scene active" id="cover">
+        <div class="scene-content">
+            <div class="corner-ornament tl"></div><div class="corner-ornament tr"></div><div class="corner-ornament bl"></div><div class="corner-ornament br"></div>
+            <div class="cover-cherub">♡</div>
+            <div class="cover-title">For Zhuzhu</div>
+            <div class="cover-subtitle">A DAY TO REMEMBER</div>
+            <div class="cover-date">2024.12.22</div>
+            <div class="divider"><div class="divider-diamond"></div></div>
+            <button class="cover-btn" onclick="nextScene()"><span class="btn-icon">♡</span>Open the Letter</button>
+        </div>
+    </div>
+
+    <!-- TEXT 1 -->
+    <div class="scene text-scene" id="text1">
+        <div class="scene-content">
+            <div class="corner-ornament tl"></div><div class="corner-ornament tr"></div><div class="corner-ornament bl"></div><div class="corner-ornament br"></div>
+            <div class="tape tl"></div>
+            <div class="text-title">That Day</div>
+            <div class="text-body typewriter">
+December 22nd — a day I want to freeze in time.
+
+We woke up slow, tangled in sunlight and each other. No plans, no rush. Just us and the quiet hum of a perfect morning.
+
+Coffee tasted better because you were across the table. The world felt softer because you were in it. Every little thing — the way you smiled at your croissant, how you stole my napkin, the way your laugh echoed off café walls — it all felt like magic I didn't deserve.
+
+But I got it anyway. Because you chose me.
+            </div>
+            <div class="text-signature">— hhr</div>
+        </div>
+        <div class="scroll-hint">SCROLL DOWN ↓</div>
+    </div>
+
+    <!-- TEXT 2 -->
+    <div class="scene text-scene" id="text2">
+        <div class="scene-content">
+            <div class="corner-ornament tl"></div><div class="corner-ornament tr"></div><div class="corner-ornament bl"></div><div class="corner-ornament br"></div>
+            <div class="tape tr"></div>
+            <div class="text-title">Still Ours</div>
+            <div class="text-body typewriter">
+Months later and I still catch myself smiling at random moments — remembering your laugh in the movie theater, the way you tilted your head in the restaurant mirror, how you held my hand like it was the most natural thing in the world.
+
+Every photo is a time machine. Every memory, a love letter.
+
+You gave me Jellycats and Chanel and pixel keychains with my initial. You gave me a whole day that I want to live in forever.
+
+This is ours. Forever.
+            </div>
+            <div class="text-signature">— hhr ♡</div>
+        </div>
+        <div class="scroll-hint">SCROLL DOWN ↓</div>
+    </div>
+
+    <!-- TEXT 3 -->
+    <div class="scene text-scene" id="text3">
+        <div class="scene-content">
+            <div class="corner-ornament tl"></div><div class="corner-ornament tr"></div><div class="corner-ornament bl"></div><div class="corner-ornament br"></div>
+            <div class="tape tl"></div>
+            <div class="text-title">The Little Things</div>
+            <div class="text-body typewriter">
+I want you to know — it's never the big things that break me open.
+
+It's you, whispering "look" at a sunset I would've missed.
+It's you, saving the last bite for me.
+It's you, choosing me again and again, on ordinary Tuesdays and lonely Wednesdays and days that don't even have names yet.
+
+You are my favorite notification. My safest place. My home.
+
+Happy Qixi, Zhuzhu. Here's to every little thing that led us here.
+            </div>
+            <div class="text-signature">— hhr ♡</div>
+        </div>
+        <div class="scroll-hint">SCROLL DOWN ↓</div>
+    </div>
+
+    <!-- PHOTO TIMELINE -->
+    <div class="scene" id="photos">
+        <div class="scene-content">
+            <div class="photos-title">Our Timeline</div>
+            <div class="timeline">
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-photo"><img src="photos/photo1.jpg" alt="1"><div class="photo-label">morning light</div></div></div>
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-photo"><img src="photos/photo2.jpg" alt="2"><div class="photo-label">café talks</div></div></div>
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-photo"><img src="photos/photo3.jpg" alt="3"><div class="photo-label">lazy couch</div></div></div>
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-photo"><img src="photos/photo4.jpg" alt="4"><div class="photo-label">movie night</div></div></div>
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-photo"><img src="photos/photo5.jpg" alt="5"><div class="photo-label">our table</div></div></div>
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-photo"><img src="photos/photo6.jpg" alt="6"><div class="photo-label">your laugh</div></div></div>
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-photo"><img src="photos/photo7.jpg" alt="7"><div class="photo-label">small things</div></div></div>
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-photo"><img src="photos/photo8.jpg" alt="8"><div class="photo-label">mirror selfie</div></div></div>
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-photo"><img src="photos/photo9.jpg" alt="9"><div class="photo-label">for you</div></div></div>
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-photo"><img src="photos/photo10.jpg" alt="10"><div class="photo-label">always ♡</div></div></div>
+            </div>
+        </div>
+        <div class="scroll-hint">SCROLL DOWN ↓</div>
+    </div>
+
+    <!-- HEART DRAW -->
+    <div class="scene" id="heart">
+        <div class="scene-content">
+            <div class="heart-title">Draw Your Heart</div>
+            <div class="heart-instruction">Trace the heart's outline from outer to inner.<br>The more you trace, the more it fills. ♡</div>
+            <div class="canvas-area">
+                <span class="deco-side">🌸 ✨</span>
+                <div class="canvas-wrapper" id="canvasWrapper">
+                    <canvas id="heartCanvas" width="280" height="220"></canvas>
+                    <div class="completion-overlay" id="completionOverlay">
+                        <div class="completion-text">You drew it. Just like you drew me in — completely. ♡</div>
+                        <button class="heart-btn" id="heartBtn" onclick="nextScene()">Continue ♡</button>
+                    </div>
+                </div>
+                <span class="deco-side">✨ ♡</span>
+            </div>
+            <div class="heart-controls">
+                <span class="heart-progress" id="heartProgress">0% ♡</span>
+                <button class="redraw-btn" id="redrawBtn">↺ Redraw</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACTION -->
+    <div class="scene" id="action">
+        <div class="scene-content">
+            <div class="corner-ornament tl"></div><div class="corner-ornament tr"></div><div class="corner-ornament bl"></div><div class="corner-ornament br"></div>
+            <div class="action-title">Happy Qixi</div>
+            <div class="action-text">
+This letter will expire when the page closes,<br>
+but what we have won't.<br><br>
+I'll write the next chapter with you.<br>
+Every. Single. Day.
+            </div>
+            <div class="divider"><div class="divider-diamond"></div></div>
+            <div class="action-date">2024.12.22 — FOREVER</div>
+        </div>
+    </div>
+
+</div>
+
+<div class="nav-dots" id="navDots"></div>
+
+<script>
+const scenes = ['cover','text1','text2','text3','photos','heart','action'];
+let currentScene = 0;
+
+function showScene(idx) {
+    scenes.forEach((s, i) => {
+        const el = document.getElementById(s);
+        if (el) { el.classList.toggle('active', i === idx); el.style.visibility = i === idx ? 'visible' : 'hidden'; }
+    });
+    currentScene = idx;
+    document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    const activeEl = document.getElementById(scenes[idx]);
+    if (activeEl) activeEl.scrollTop = 0;
+    if (scenes[idx] === 'heart') setTimeout(() => { if (window.HeartDrawModule) window.HeartDrawModule.reset(); }, 300);
+}
+
+function nextScene() { if (currentScene < scenes.length - 1) showScene(currentScene + 1); }
+
+// Nav dots
+const navDots = document.getElementById('navDots');
+scenes.forEach((s, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => { if (!wheelCooldown) showScene(i); };
+    navDots.appendChild(dot);
+});
+
+// Touch
+let touchStartY = 0;
+document.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
+document.addEventListener('touchend', e => {
+    const diff = touchStartY - e.changedTouches[0].clientY;
+    if (Math.abs(diff) > 50) { if (diff > 0 && currentScene < scenes.length - 1) nextScene(); else if (diff < 0 && currentScene > 0) showScene(currentScene - 1); }
+}, { passive: true });
+
+// Wheel
+let wheelCooldown = false;
+document.addEventListener('wheel', e => {
+    if (wheelCooldown) return;
+    const el = document.getElementById(scenes[currentScene]);
+    if (el) { const st = el.scrollTop, sh = el.scrollHeight, ch = el.clientHeight; if (e.deltaY > 0 && st + ch < sh - 10) return; if (e.deltaY < 0 && st > 10) return; }
+    if (Math.abs(e.deltaY) > 30) { wheelCooldown = true; if (e.deltaY > 0 && currentScene < scenes.length - 1) nextScene(); else if (e.deltaY < 0 && currentScene > 0) showScene(currentScene - 1); setTimeout(() => { wheelCooldown = false; }, 800); }
+}, { passive: true });
+
+// Keyboard
+let keyCooldown = false;
+document.addEventListener('keydown', e => {
+    if (keyCooldown) return;
+    if (e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); keyCooldown = true; nextScene(); setTimeout(() => { keyCooldown = false; }, 600); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); if (currentScene > 0) { keyCooldown = true; showScene(currentScene - 1); setTimeout(() => { keyCooldown = false; }, 600); } }
+});
+
+// Floating Hearts
+(function() { const c = document.getElementById('floatingHearts'); const items = ['♡','♥','❤','✿','❀']; for (let i = 0; i < 8; i++) { const h = document.createElement('div'); h.className = 'float-heart'; h.textContent = items[i % items.length]; h.style.left = (Math.random() * 100) + '%'; h.style.animationDuration = (14 + Math.random() * 16) + 's'; h.style.animationDelay = (Math.random() * 12) + 's'; h.style.fontSize = (0.55 + Math.random() * 0.45) + 'rem'; c.appendChild(h); } })();
+
+// === HEART CANVAS: 三层轮廓描摹法 (DeepSeek方案) ===
+(function() {
+    'use strict';
+    const CANVAS_W = 280, CANVAS_H = 220;
+    const HEART_CX = 140, HEART_CY = 110, HEART_OY = 5.5;
+    const OUTER_SCALE = 5.0, MID_SCALE = 3.7, INNER_SCALE = 2.4;
+    const HIT_THRESHOLD = 8, INTERPOLATE_STEP = 4;
+    const STROKE_DECAY = 0.022, MAX_STROKE_POINTS = 600;
+    const LAYER_WEIGHTS = [0.40, 0.35, 0.25];
+    const UNLOCK_THRESHOLD = 0.5, COMPLETE_THRESHOLD = 0.85;
+    const SAMPLES_PER_LAYER = 150, DENSE_SAMPLE_COUNT = 2000;
+
+    const canvas = document.getElementById('heartCanvas');
+    const ctx = canvas.getContext('2d');
+    const redrawBtn = document.getElementById('redrawBtn');
+    const overlay = document.getElementById('completionOverlay');
+    const continueBtn = document.getElementById('heartBtn');
+
+    // DPR处理
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    canvas.width = CANVAS_W * dpr; canvas.height = CANVAS_H * dpr;
+    canvas.style.width = CANVAS_W + 'px'; canvas.style.height = CANVAS_H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    function heartX(t) { return 16 * Math.pow(Math.sin(t), 3); }
+    function heartY(t) { return 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t); }
+    function paramToCanvas(t, scale) {
+        return { x: HEART_CX + heartX(t) * scale, y: HEART_CY - (heartY(t) + HEART_OY) * scale };
+    }
+
+    function generateUniformSamples(numSamples, scale) {
+        const dense = [];
+        for (let i = 0; i <= DENSE_SAMPLE_COUNT; i++) {
+            const t = (i / DENSE_SAMPLE_COUNT) * 2 * Math.PI;
+            dense.push({ t, x: heartX(t), y: heartY(t) });
+        }
+        const cumArc = [0];
+        for (let i = 1; i <= DENSE_SAMPLE_COUNT; i++) {
+            const dx = dense[i].x - dense[i-1].x, dy = dense[i].y - dense[i-1].y;
+            cumArc.push(cumArc[i-1] + Math.sqrt(dx*dx + dy*dy));
+        }
+        const totalArc = cumArc[DENSE_SAMPLE_COUNT];
+        const samples = [];
+        for (let i = 0; i < numSamples; i++) {
+            const targetArc = (i / numSamples) * totalArc;
+            let lo = 0, hi = DENSE_SAMPLE_COUNT;
+            while (lo < hi) { const mid = (lo + hi) >> 1; if (cumArc[mid] < targetArc) lo = mid + 1; else hi = mid; }
+            const pos = paramToCanvas(dense[Math.min(lo, DENSE_SAMPLE_COUNT)].t, scale);
+            samples.push({ x: pos.x, y: pos.y, hit: false });
+        }
+        return samples;
+    }
+
+    const heartLayers = [
+        generateUniformSamples(SAMPLES_PER_LAYER, OUTER_SCALE),
+        generateUniformSamples(SAMPLES_PER_LAYER, MID_SCALE),
+        generateUniformSamples(SAMPLES_PER_LAYER, INNER_SCALE)
+    ];
+    const layerHitCount = [0, 0, 0];
+    const layerActive = [true, false, false];
+    let strokes = [], isDrawing = false, lastStrokePoint = null;
+    let progress = 0, completed = false, fillAlpha = 0;
+    let particles = [], guideText = '', guideAlpha = 0, guideTimer = 0;
+    let initialGuideShown = false, completionDelayFrames = 0;
+
+    function showGuide(text, duration) { guideText = text; guideAlpha = 1; guideTimer = duration || 90; }
+    function updateGuide() {
+        if (guideTimer > 0) { guideTimer--; if (guideTimer < 25) guideAlpha = Math.max(0, guideTimer / 25); }
+        else guideAlpha = 0;
+    }
+
+    function updateUnlocks() {
+        const rate0 = layerHitCount[0] / heartLayers[0].length;
+        if (rate0 >= UNLOCK_THRESHOLD && !layerActive[1]) { layerActive[1] = true; showGuide('Beautiful — trace deeper', 80); }
+        const rate1 = layerHitCount[1] / heartLayers[1].length;
+        if (rate1 >= UNLOCK_THRESHOLD && !layerActive[2]) { layerActive[2] = true; showGuide('One more layer, love', 80); }
+        if (!completed && progress >= 0.72 && progress < COMPLETE_THRESHOLD) showGuide('Almost there...', 50);
+    }
+
+    function calculateProgress() {
+        let total = 0;
+        for (let l = 0; l < 3; l++) { if (layerActive[l]) total += LAYER_WEIGHTS[l] * (layerHitCount[l] / heartLayers[l].length); }
+        return Math.min(1, total);
+    }
+
+    function processStrokePoint(x, y) {
+        if (completed || x < 0 || x > CANVAS_W || y < 0 || y > CANVAS_H) return;
+        const threshSq = HIT_THRESHOLD * HIT_THRESHOLD;
+        for (let l = 0; l < 3; l++) {
+            if (!layerActive[l]) continue;
+            const pts = heartLayers[l];
+            for (let i = 0; i < pts.length; i++) {
+                if (pts[i].hit) continue;
+                const dx = pts[i].x - x, dy = pts[i].y - y;
+                if (dx*dx + dy*dy <= threshSq) { pts[i].hit = true; layerHitCount[l]++; }
+            }
+        }
+        progress = calculateProgress();
+        updateUnlocks();
+        if (!completed && progress >= COMPLETE_THRESHOLD) {
+            completed = true; completionDelayFrames = 20;
+            for (let i = 0; i < 20; i++) spawnParticle();
+        }
+    }
+
+    function drawSegment(x1, y1, x2, y2) {
+        const dx = x2-x1, dy = y2-y1, dist = Math.sqrt(dx*dx+dy*dy);
+        const steps = Math.max(1, Math.floor(dist / INTERPOLATE_STEP));
+        for (let i = 1; i <= steps; i++) {
+            const t = i / steps;
+            processStrokePoint(x1 + dx*t, y1 + dy*t);
+            strokes.push({ x: x1+dx*t, y: y1+dy*t, alpha: 1 });
+        }
+    }
+
+    function addStrokePoint(x, y) {
+        if (lastStrokePoint) drawSegment(lastStrokePoint.x, lastStrokePoint.y, x, y);
+        else { processStrokePoint(x, y); strokes.push({ x, y, alpha: 1 }); }
+        lastStrokePoint = { x, y };
+        if (strokes.length > MAX_STROKE_POINTS) strokes.splice(0, strokes.length - MAX_STROKE_POINTS);
+    }
+
+    function getCanvasCoords(cx, cy) {
+        const rect = canvas.getBoundingClientRect();
+        return { x: (cx - rect.left) * (CANVAS_W / rect.width), y: (cy - rect.top) * (CANVAS_H / rect.height) };
+    }
+
+    function handleStart(cx, cy) {
+        if (completed) return;
+        isDrawing = true; lastStrokePoint = null;
+        const pos = getCanvasCoords(cx, cy);
+        addStrokePoint(pos.x, pos.y);
+        if (!initialGuideShown) { initialGuideShown = true; guideAlpha = 0; guideTimer = 0; }
+    }
+    function handleMove(cx, cy) { if (!isDrawing || completed) return; const pos = getCanvasCoords(cx, cy); addStrokePoint(pos.x, pos.y); }
+    function handleEnd() { isDrawing = false; lastStrokePoint = null; }
+
+    canvas.addEventListener('mousedown', e => { e.preventDefault(); handleStart(e.clientX, e.clientY); });
+    window.addEventListener('mousemove', e => { if (isDrawing) handleMove(e.clientX, e.clientY); });
+    window.addEventListener('mouseup', handleEnd);
+    canvas.addEventListener('touchstart', e => { e.preventDefault(); handleStart(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+    canvas.addEventListener('touchmove', e => { e.preventDefault(); if (isDrawing && e.touches.length > 0) handleMove(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+    canvas.addEventListener('touchend', e => { e.preventDefault(); handleEnd(); }, { passive: false });
+
+    function spawnParticle() {
+        const t = Math.random() * 2 * Math.PI;
+        const sc = OUTER_SCALE * (0.25 + Math.random() * 0.75);
+        const hx = heartX(t), hy = heartY(t);
+        const angle = Math.random() * 2 * Math.PI, speed = 0.4 + Math.random() * 2.2;
+        const colors = ['#4A90A4','#E8E8E8','#FFFFFF','#A5D8E8','#FFD700','#6BA8C0'];
+        particles.push({ x: HEART_CX+hx*sc, y: HEART_CY-(hy+HEART_OY)*sc, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed, life: 1, decay: 0.006+Math.random()*0.018, size: 0.8+Math.random()*2.8, color: colors[Math.floor(Math.random()*colors.length)] });
+    }
+
+    function createHeartPath(scale) {
+        const p = new Path2D();
+        for (let i = 0; i <= 200; i++) {
+            const t = (i/200) * 2 * Math.PI;
+            const pos = paramToCanvas(t, scale);
+            if (i === 0) p.moveTo(pos.x, pos.y); else p.lineTo(pos.x, pos.y);
+        }
+        p.closePath();
+        return p;
+    }
+
+    function renderBackground() {
+        const grad = ctx.createLinearGradient(0,0,0,CANVAS_H);
+        grad.addColorStop(0,'#F2F7FC'); grad.addColorStop(0.5,'#E8F0F8'); grad.addColorStop(1,'#DDE8F2');
+        ctx.fillStyle = grad; ctx.fillRect(0,0,CANVAS_W,CANVAS_H);
+        ctx.save(); ctx.strokeStyle='rgba(74,144,164,0.4)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+        ctx.beginPath(); ctx.rect(3,3,CANVAS_W-6,CANVAS_H-6); ctx.stroke(); ctx.restore();
+        ctx.save(); ctx.strokeStyle='rgba(74,144,164,0.15)'; ctx.lineWidth=1.5; ctx.setLineDash([6,6]);
+        ctx.stroke(createHeartPath(OUTER_SCALE)); ctx.restore(); ctx.setLineDash([]);
+    }
+
+    function renderHeartLayer(li) {
+        const pts = heartLayers[li], active = layerActive[li];
+        const cfgs = [{b:'#4A90A4',d:'rgba(74,144,164,0.25)',lw:2.0,dw:1.0,g:6},{b:'#6BA8C0',d:'rgba(74,144,164,0.18)',lw:1.6,dw:0.9,g:5},{b:'#9BC6D9',d:'rgba(74,144,164,0.14)',lw:1.3,dw:0.7,g:4}];
+        const c = cfgs[li];
+        ctx.save(); ctx.lineCap='round'; ctx.lineJoin='round';
+        for (let i = 0; i < pts.length; i++) {
+            const p1 = pts[i], p2 = pts[(i+1)%pts.length];
+            const both = p1.hit && p2.hit;
+            ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y);
+            if (both && active) { ctx.strokeStyle=c.b; ctx.lineWidth=c.lw; ctx.shadowBlur=c.g; ctx.shadowColor=c.b; ctx.setLineDash([]); }
+            else { ctx.strokeStyle = active ? c.d : 'rgba(74,144,164,0.06)'; ctx.lineWidth = active ? c.dw : 0.5; ctx.shadowBlur=0; ctx.setLineDash([3,5]); }
+            ctx.stroke();
+        }
+        ctx.restore(); ctx.shadowBlur=0; ctx.setLineDash([]);
+    }
+
+    function renderStrokes() {
+        if (strokes.length < 2) return;
+        ctx.save(); ctx.lineCap='round'; ctx.lineJoin='round';
+        for (let i = 1; i < strokes.length; i++) {
+            const p1 = strokes[i-1], p2 = strokes[i];
+            const alpha = Math.max(0, Math.min(1, p2.alpha));
+            if (alpha <= 0.01) continue;
+            ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y);
+            ctx.strokeStyle=`rgba(74,144,164,${alpha})`; ctx.lineWidth=2; ctx.shadowBlur=4; ctx.shadowColor=`rgba(74,144,164,${alpha*0.5})`; ctx.stroke();
+        }
+        ctx.restore(); ctx.shadowBlur=0;
+    }
+
+    function renderProgressBar() {
+        if (completed && fillAlpha > 0.5) return;
+        const barW = 160, barH = 5, barX = (CANVAS_W-barW)/2, barY = CANVAS_H-20;
+        const displayP = completed ? 1 : progress;
+        ctx.save(); ctx.fillStyle='rgba(255,255,255,0.7)';
+        ctx.beginPath(); ctx.roundRect(barX, barY, barW, barH, 2.5); ctx.fill();
+        if (displayP > 0.01) {
+            const fw = barW * displayP;
+            const fg = ctx.createLinearGradient(barX,barY,barX+barW,barY);
+            fg.addColorStop(0,'#9BC6D9'); fg.addColorStop(1,'#4A90A4');
+            ctx.fillStyle=fg; ctx.shadowBlur=6; ctx.shadowColor='rgba(74,144,164,0.4)';
+            ctx.beginPath(); ctx.roundRect(barX,barY,Math.max(fw,3),barH,2.5); ctx.fill(); ctx.shadowBlur=0;
+        }
+        const pct = Math.round(displayP*100);
+        ctx.font='10px "Courier Prime",monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillStyle='rgba(44,62,80,0.75)'; ctx.fillText(pct+'%', CANVAS_W/2, barY-8);
+        ctx.restore();
+        document.getElementById('heartProgress').textContent = pct + '% ♡';
+    }
+
+    function renderGuide() {
+        if (guideAlpha <= 0.01 || guideText === '') return;
+        ctx.save(); ctx.globalAlpha=guideAlpha; ctx.font='16px "Caveat",cursive'; ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillStyle='rgba(44,62,80,0.8)'; ctx.shadowBlur=6; ctx.shadowColor='rgba(74,144,164,0.3)';
+        ctx.fillText(guideText, CANVAS_W/2, 20); ctx.restore(); ctx.shadowBlur=0;
+    }
+
+    function renderHeartFill() {
+        if (fillAlpha <= 0.01) return;
+        ctx.save(); ctx.globalAlpha=Math.min(1,fillAlpha);
+        const path = createHeartPath(OUTER_SCALE);
+        const g = ctx.createRadialGradient(HEART_CX-5,HEART_CY-12,8,HEART_CX,HEART_CY,68);
+        g.addColorStop(0,'#9BC6D9'); g.addColorStop(0.6,'#4A90A4'); g.addColorStop(1,'#2E6A7A');
+        ctx.fillStyle=g; ctx.shadowBlur=20; ctx.shadowColor='rgba(74,144,164,0.5)'; ctx.fill(path); ctx.restore(); ctx.shadowBlur=0;
+    }
+
+    function renderParticles() {
+        for (const p of particles) {
+            ctx.save(); ctx.globalAlpha=Math.max(0,p.life); ctx.fillStyle=p.color; ctx.shadowBlur=5; ctx.shadowColor=p.color;
+            ctx.beginPath(); ctx.arc(p.x,p.y,p.size*p.life,0,Math.PI*2); ctx.fill(); ctx.restore();
+        }
+        ctx.shadowBlur=0;
+    }
+
+    function animate() {
+        for (let i = strokes.length-1; i >= 0; i--) { strokes[i].alpha -= STROKE_DECAY; if (strokes[i].alpha <= 0) strokes.splice(i,1); }
+        updateGuide();
+        renderBackground();
+        renderHeartLayer(2); renderHeartLayer(1); renderHeartLayer(0);
+        renderStrokes(); renderHeartFill(); renderParticles();
+        if (!completed) { renderProgressBar(); renderGuide(); }
+        if (completed) {
+            if (fillAlpha < 1) fillAlpha += 0.025;
+            if (completionDelayFrames > 0) { completionDelayFrames--; if (completionDelayFrames === 0) overlay.classList.add('visible'); }
+            if (fillAlpha >= 0.5 && Math.random() < 0.45) spawnParticle();
+            for (let i = particles.length-1; i >= 0; i--) {
+                const p = particles[i]; p.x += p.vx; p.y += p.vy; p.vy += 0.012; p.vx *= 0.995; p.vy *= 0.995; p.life -= p.decay;
+                if (p.life <= 0) particles.splice(i,1);
+            }
+            if (particles.length > 150) particles.splice(0, particles.length-150);
+        }
+        requestAnimationFrame(animate);
+    }
+
+    function resetAll() {
+        for (let l = 0; l < 3; l++) { for (const p of heartLayers[l]) p.hit = false; layerHitCount[l] = 0; }
+        layerActive[0] = true; layerActive[1] = false; layerActive[2] = false;
+        strokes = []; isDrawing = false; lastStrokePoint = null;
+        progress = 0; completed = false; fillAlpha = 0; completionDelayFrames = 0;
+        particles = []; guideText = ''; guideAlpha = 0; guideTimer = 0; initialGuideShown = false;
+        overlay.classList.remove('visible');
+        showGuide("Trace the heart's outline", 120);
+    }
+
+    redrawBtn.addEventListener('click', resetAll);
+    continueBtn.addEventListener('click', () => {
+        overlay.classList.remove('visible');
+        for (let i = 0; i < 15; i++) spawnParticle();
+    });
+
+    // 暴露给外部scene系统
+    window.HeartDrawModule = { reset: resetAll, getProgress: () => progress, isCompleted: () => completed };
+
+    showGuide("Trace the heart's outline", 150);
+    animate();
+})();
+
+// Typewriter
+function typeWriter(element, speed = 18) {
+    const text = element.textContent;
+    element.textContent = '';
+    element.classList.add('done');
+    let i = 0;
+    function type() { if (i < text.length) { element.textContent += text.charAt(i); i++; setTimeout(type, speed); } }
+    type();
+}
+
+const twObserver = new MutationObserver(mutations => {
+    mutations.forEach(m => {
+        if (m.target.classList.contains('active')) {
+            const tw = m.target.querySelector('.typewriter:not(.done)');
+            if (tw) typeWriter(tw, 16);
+        }
+    });
+});
+scenes.forEach(s => { const el = document.getElementById(s); if (el) twObserver.observe(el, { attributes: true, attributeFilter: ['class'] }); });
+
+showScene(0);
+</script>
+</body>
+</html>
