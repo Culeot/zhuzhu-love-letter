@@ -136,7 +136,29 @@ body::after {
 .action-text::before { content: '❝'; position: absolute; top: -7px; left: 7px; font-size: 1.3rem; color: var(--accent); opacity: 0.35; }
 .action-date { font-size: 0.68rem; color: var(--accent); letter-spacing: 3px; }
 
-/* === NAV DOTS === */
+/* === NEXT BUTTON (Mobile) === */
+.next-btn {
+    position: fixed;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 32px;
+    background: transparent;
+    border: 1.5px solid var(--primary);
+    color: var(--primary);
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.82rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 100;
+    backdrop-filter: blur(4px);
+    background: rgba(255,255,255,0.6);
+    border-radius: 20px;
+}
+.next-btn:hover { background: var(--primary); color: var(--cream); }
+.next-btn:active { transform: translateX(-50%) scale(0.96); }
+.next-btn.hidden { opacity: 0; pointer-events: none; }
 .nav-dots { position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 100; padding: 4px 9px; background: rgba(255,255,255,0.5); border-radius: 8px; backdrop-filter: blur(4px); }
 .nav-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); transition: all 0.3s ease; cursor: pointer; }
 .nav-dot.active { background: var(--primary); width: 14px; border-radius: 2px; }
@@ -188,8 +210,7 @@ Being with you makes me so happy and so moved.
 I can't even put it into words. Just warm inside, like the world became different because of you.
 
 Thank you for being in my life.
-
-—— hhr
+            </div>
             <div class="text-signature">— hhr</div>
         </div>
         <div class="scroll-hint">SCROLL DOWN ↓</div>
@@ -209,8 +230,7 @@ The way you smile. The way you hold my hands. Every word you've said to me.
 These are all my most precious memories.
 
 This is ours. Forever.
-
-—— hhr ♡
+            </div>
             <div class="text-signature">— hhr ♡</div>
         </div>
         <div class="scroll-hint">SCROLL DOWN ↓</div>
@@ -230,8 +250,7 @@ A word from you, a look from you, can keep me smiling for days.
 Thank you for always being there, choosing me, and loving me.
 
 Happy Qixi, Zhuzhu.
-
-—— hhr ♡
+            </div>
             <div class="text-signature">— hhr ♡</div>
         </div>
         <div class="scroll-hint">SCROLL DOWN ↓</div>
@@ -299,6 +318,7 @@ Every. Single. Day.
 </div>
 
 <div class="nav-dots" id="navDots"></div>
+<button class="next-btn" id="nextBtn" onclick="nextScene()">Next ❦</button>
 
 <script>
 const scenes = ['cover','text1','text2','text3','photos','heart','action'];
@@ -314,6 +334,9 @@ function showScene(idx) {
     const activeEl = document.getElementById(scenes[idx]);
     if (activeEl) activeEl.scrollTop = 0;
     if (scenes[idx] === 'heart') setTimeout(() => { if (window.HeartDrawModule) window.HeartDrawModule.reset(); }, 300);
+    // Hide Next button on last scene
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) nextBtn.classList.toggle('hidden', idx >= scenes.length - 1);
 }
 
 function nextScene() { if (currentScene < scenes.length - 1) showScene(currentScene + 1); }
