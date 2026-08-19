@@ -355,7 +355,7 @@ let touchStartY = 0;
 document.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
 document.addEventListener('touchend', e => {
     const diff = touchStartY - e.changedTouches[0].clientY;
-    if (Math.abs(diff) > 50) { if (diff > 0 && currentScene < scenes.length - 1) nextScene(); else if (diff < 0 && currentScene > 0) showScene(currentScene - 1); }
+    if (Math.abs(diff) > 80) { if (diff > 0 && currentScene < scenes.length - 1) nextScene(); else if (diff < 0 && currentScene > 0) showScene(currentScene - 1); }
 }, { passive: true });
 
 // Wheel
@@ -363,7 +363,7 @@ let wheelCooldown = false;
 document.addEventListener('wheel', e => {
     if (wheelCooldown) return;
     const el = document.getElementById(scenes[currentScene]);
-    if (el) { const st = el.scrollTop, sh = el.scrollHeight, ch = el.clientHeight; if (e.deltaY > 0 && st + ch < sh - 10) return; if (e.deltaY < 0 && st > 10) return; }
+    if (el) { const st = el.scrollTop, sh = el.scrollHeight, ch = el.clientHeight; if (e.deltaY > 0 && st + ch < sh - 50) return; if (e.deltaY < 0 && st > 50) return; }
     if (Math.abs(e.deltaY) > 30) { wheelCooldown = true; if (e.deltaY > 0 && currentScene < scenes.length - 1) nextScene(); else if (e.deltaY < 0 && currentScene > 0) showScene(currentScene - 1); setTimeout(() => { wheelCooldown = false; }, 800); }
 }, { passive: true });
 
