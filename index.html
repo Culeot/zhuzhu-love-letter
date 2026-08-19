@@ -334,9 +334,9 @@ function showScene(idx) {
     const activeEl = document.getElementById(scenes[idx]);
     if (activeEl) activeEl.scrollTop = 0;
     if (scenes[idx] === 'heart') setTimeout(() => { if (window.HeartDrawModule) window.HeartDrawModule.reset(); }, 300);
-    // Hide Next button on last scene
+    // Hide Next button on cover, heart, and last scene
     const nextBtn = document.getElementById('nextBtn');
-    if (nextBtn) nextBtn.classList.toggle('hidden', idx >= scenes.length - 1);
+    if (nextBtn) nextBtn.classList.toggle('hidden', idx === 0 || idx === 4 || idx >= scenes.length - 1);
 }
 
 function nextScene() { if (currentScene < scenes.length - 1) showScene(currentScene + 1); }
